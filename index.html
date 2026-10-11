@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- 外部への通信を禁止する（ファイルがこの端末の外に送られないことを、ブラウザの仕組みで保証する）。
+     'unsafe-eval' は HEIC 変換の部品（heic2any）が内部で使うため。通信の許可には関係しない -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:; worker-src 'self' blob:; frame-src 'self' blob: data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>PDF変換</title>
+<meta name="description" content="写真・Word・Excel・PowerPoint・テキストなどを、ブラウザだけでPDFにします。ファイルは外部に送信されません。">
+<meta name="theme-color" content="#d93a2b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>📄 PDF変換</h1>
+    <p class="lead">写真・Word・Excel・PowerPoint・テキストなどを PDF にします。</p>
+  </header>
+
+  <section id="drop" class="drop">
+    <input id="file-input" type="file" multiple hidden>
+    <button id="pick-btn" class="pick" type="button">＋ ファイルを選ぶ</button>
+    <p class="drop-hint">ここにファイルをドラッグしても追加できます（いくつでも）</p>
+  </section>
+
+  <section id="list-section" hidden>
+    <div class="list-head">
+      <h2>選んだファイル <span id="count"></span></h2>
+      <div class="list-tools">
+        <button id="sort-btn" type="button" class="link">名前順</button>
+        <button id="clear-btn" type="button" class="link">すべて外す</button>
+      </div>
+    </div>
+    <p class="note">上から順番にページになります。↑↓で並べ替えできます。</p>
+    <ul id="list" class="list"></ul>
+
+    <fieldset class="mode">
+      <legend>PDFの作り方</legend>
+      <label><input type="radio" name="mode" value="merge" checked> 1つのPDFにまとめる</label>
+      <label><input type="radio" name="mode" value="separate"> ファイルごとに別々のPDFにする</label>
+    </fieldset>
+
+    <button id="convert-btn" class="primary" type="button">PDFにする</button>
+  </section>
+
+  <section id="progress-section" hidden>
+    <progress id="progress" max="1" value="0"></progress>
+    <p id="progress-text" class="progress-text"></p>
+  </section>
+
+  <section id="result-section" hidden>
+    <p id="result-text" class="result-text"></p>
+    <div class="result-buttons">
+      <a id="download-link" class="primary" href="#">ダウンロード</a>
+      <button id="share-btn" class="secondary" type="button" hidden>共有・「ファイル」に保存</button>
+    </div>
+  </section>
+
+  <section id="error-section" class="errors" hidden>
+    <h2>変換できなかったファイル</h2>
+    <ul id="error-list"></ul>
+  </section>
+
+  <details class="help">
+    <summary>使えるファイルと注意点</summary>
+    <ul>
+      <li><b>画像</b>（JPG・PNG・HEIC など）… 1枚が1ページになります</li>
+      <li><b>PDF</b> … そのままつなげます（複数のPDFを1つにまとめられます）</li>
+      <li><b>Word</b>（.docx）… 文字・見出し・表・画像が入ります。ヘッダー・フッターや細かい配置は再現されません</li>
+      <li><b>Excel</b>（.xlsx / .xls）・<b>CSV</b> … シートごとに表になります。横に広い表は横向き・縮小します</li>
+      <li><b>PowerPoint</b>（.pptx）… 1スライドが1ページです。文字・画像・表は入りますが、グラフや SmartArt は表示されません</li>
+      <li><b>テキスト・Markdown・Webページ</b>（.txt / .md / .html）</li>
+    </ul>
+    <p>できたPDFは「ページの写真」のような作りです。<b>PDFの中の文字は選択・検索できません。</b></p>
+    <p>古い形式の .doc / .ppt は使えません。Word・PowerPoint で .docx / .pptx に保存し直してください。</p>
+  </details>
+
+  <footer>🔒 ファイルはこの端末の中だけで変換され、インターネットには送信されません。</footer>
+</main>
+<script src="converters.js"></script>
+<script src="pdf.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
